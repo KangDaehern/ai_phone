@@ -1,0 +1,186 @@
+# AI 전화 자동응대 프로젝트
+
+소규모 사무실의 대표전화를 AI가 먼저 응대하고, 발신자와 용건을 파악해 적절한 담당자 내선으로 연결하는 시스템이다.
+
+현재 단계는 더미 데이터와 외부 서비스 대체 어댑터를 사용한 초도 구현 단계다. 실제 통신 사업자와 외부 API 계약은 아직 확정하지 않았다.
+
+현재 초도 버전은 실제 전화 장비, OpenAI 음성 API와 카카오 알림톡 계약 없이 실행할 수 있는 로컬 시뮬레이터다. 외부 연동은 더미 어댑터가 대신하며 실제 계약 후 어댑터 구현만 교체하도록 분리했다.
+
+## 현재 구현 범위
+
+- 대표 `홍사장` 1명과 `홍길원`~`홍길구` 직원 9명
+- 대표 내선 100, 직원 내선 101~109
+- 더미 대표번호 `02-555-0100`
+- 직원당 더미 업체 3개, 총 27개 업체
+- 등록 발신번호의 담당자 자동 직결
+- 업체명으로 담당자 검색
+- 대표/사장 통화 요청 시 홍사장에게 연결
+- 직원 회의·외근·휴가·통화중 상태와 대체 담당자 반영
+- 담당자 연결 전 회사명·고객명·용건 사전 안내
+- 10초 무응답 시 부재 메모와 더미 알림톡
+- 확정 스팸 차단 및 의심 스팸 검토 알림
+- 대표를 제외한 직원 3~20명 설정 검증
+
+## 프로젝트 구조
+
+```text
+config/office.json       직원, 내선, 담당 업체, 대표번호, 스팸 규칙
+ai_phone/config.py       설정 로드 및 검증
+ai_phone/routing.py      담당자 결정 엔진
+ai_phone/service.py      전체 통화 처리 흐름
+ai_phone/adapters.py     전화·음성·알림톡 더미 어댑터
+ai_phone/cli.py          개발자용 통화 시뮬레이터
+tests/                   자동 테스트
+design/                  설계 문서
+```
+
+## 실행 환경
+
+- Python 3.11 이상
+- 현재 더미 모드는 외부 패키지와 API 키가 필요하지 않음
+
+프로젝트 루트 `E:\gitView\ai_phone`에서 실행한다. 별도의 `PYTHONPATH` 설정이나 설치는 필요하지 않다.
+
+PowerShell:
+
+```powershell
+$env:PYTHONUTF8='1'
+python -m ai_phone.cli --caller 02-555-1001 --caller-name 김고객 --purpose '부가세 신고 문의'
+```
+
+Git Bash:
+
+```bash
+cd /e/gitView/ai_phone
+PYTHONUTF8=1 python -m ai_phone.cli \
+  --caller '02-555-1001' \
+  --caller-name '김고객' \
+  --purpose '부가세 신고 문의'
+```
+
+대표 연결과 10초 무응답 상황을 시뮬레이션한다.
+
+```powershell
+python -m ai_phone.cli `
+  --caller 010-7777-7777 `
+  --caller-name 박고객 `
+  --company 해든학원 `
+  --purpose '대표님과 통화 요청' `
+  --simulate-no-answer
+```
+
+직원 휴가와 대체 담당자 연결을 시뮬레이션한다.
+
+```powershell
+python -m ai_phone.cli `
+  --caller 02-555-1001 `
+  --purpose '급여 처리 문의' `
+  --status '홍길원=vacation'
+```
+
+가능한 상태값은 `available`, `busy`, `meeting`, `away`, `vacation`, `off_duty`다.
+
+## 스피커 음성 대화 데모
+
+마이크 없이 고객이 말할 문장을 키보드로 입력하고, AI 응답은 Windows 내장 한국어 여성 음성으로 스피커에서 들을 수 있다.
+
+Git Bash에서 실행한다.
+
+```bash
+cd /e/gitView/ai_phone
+PYTHONUTF8=1 python -m ai_phone.voice_demo --caller '010-7777-7777'
+```
+
+AI 안내 음성이 나온 뒤 다음과 같이 입력한다.
+
+```text
+누리기획 김누리입니다. 홍길육 담당자 바꿔주세요.
+```
+
+직원 이름만 말하면 바로 연결하지 않는다. 등록 발신번호는 업체를 자동 확인하고 성함을
+추가로 물으며, 미등록 번호는 업체명과 성함을 모두 확인한 뒤 연결한다. 담당자에게는
+최소한 `업체명 + 발신자 성함 + 최초 요청 내용`이 사전 안내된다.
+
+예상되는 음성 응답:
+
+```text
+네, 홍길육 담당자에게 연결해 드리겠습니다. 잠시만 기다려 주세요.
+담당자에게 연결되었습니다.
+```
+
+대표 연결을 시험할 때는 다음과 같이 입력한다.
+
+```text
+해든학원 박고객입니다. 대표님과 통화하고 싶습니다.
+```
+
+담당자가 10초 동안 받지 않는 상황을 시험한다.
+
+```bash
+PYTHONUTF8=1 python -m ai_phone.voice_demo \
+  --caller '010-7777-7777' \
+  --simulate-no-answer
+```
+
+설치된 음성 목록 확인:
+
+```bash
+python -m ai_phone.voice_demo --list-voices
+```
+
+현재 PC에서는 `Microsoft Heami Desktop` 한국어 여성 음성을 기본으로 사용한다. 별도 계약 없이 동작하는 Windows 내장 합성음이므로 실제 음성 AI보다 기계적으로 들릴 수 있다. 기본 속도는 `-1`이며 `--rate -10~10`으로 조절할 수 있다. 운영 단계에서는 같은 대화 흐름에 OpenAI Realtime 음성 어댑터를 연결한다.
+
+## 자동 테스트
+
+```powershell
+$env:PYTHONUTF8='1'
+python -m unittest discover -s tests -v
+```
+
+## 실제 외부 서비스 연동 지점
+
+현재 [adapters.py](ai_phone/adapters.py)의 다음 더미 구현이 외부 서비스를 대신한다.
+
+- `DummyTelephonyAdapter`: PBX 내선 연결과 통화 차단
+- `DummyVoiceAdapter`: AI 음성 안내와 부재 안내
+- `DummyNotificationAdapter`: 카카오 알림톡과 스팸 검토 알림
+
+계약 후 다음 구현체를 추가한다.
+
+- `CarrierSipTelephonyAdapter`
+- `OpenAIRealtimeVoiceAdapter`
+- `KakaoAlimtalkNotificationAdapter`
+
+핵심 라우팅 엔진은 외부 서비스 계약 여부와 무관하게 그대로 사용한다.
+
+## OpenAI 음성 API 개발 테스트 비용
+
+ChatGPT Plus와 OpenAI API는 결제가 분리되어 있다. Plus 구독료만으로 API 키를 이용한 Realtime 음성 테스트 비용이 포함되지는 않는다.
+
+실제 음성 API 테스트를 시작하려면 개발자가 OpenAI API Platform에서 별도로 결제수단을 등록하거나 선불 크레딧을 구매해야 한다. 신규 API 계정의 선불 크레딧 최소 구매액은 공식 문서 기준 5달러다. 자동 충전을 원하지 않으면 API 결제 설정에서 auto-reload를 끄고 낮은 사용 한도와 예산 알림을 설정한다.
+
+초기 개발 순서는 다음을 권장한다.
+
+1. 현재 더미 모드로 모든 라우팅 테스트
+2. API 계정에 소액 선불 크레딧 등록
+3. 마이크·스피커 또는 WebRTC로 음성 대화만 테스트
+4. 테스트 SIP 번호로 수신 테스트
+5. 실제 통신사 PBX와 연결
+
+## 문서
+
+- [제품 요구사항](design/01-product-requirements.md)
+- [시스템 구조 초안](design/02-architecture.md)
+- [구현 전 확인사항](design/03-open-questions.md)
+- [10인 사무실 구축안과 예상 비용](design/04-cost-and-procurement.md)
+- [필수 기능 및 적용 계획](design/05-feature-roadmap.md)
+- [운영비 계산](design/06-cost-summary.md)
+- [초도 구현 명세](design/07-initial-implementation.md)
+
+## 우선 목표
+
+1. 등록된 발신번호는 담당자에게 바로 연결한다.
+2. 미등록 번호는 AI가 짧게 응대하여 회사명, 이름, 용건을 확인한다.
+3. 직원별 역할과 고객 담당 정보를 기준으로 담당자를 결정한다.
+4. 담당자가 받지 않으면 AI가 다시 응대하여 메모를 남긴다.
+5. 통화 요약을 담당자에게 안전한 채널로 전달한다.

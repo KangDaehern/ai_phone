@@ -1,0 +1,67 @@
+{
+  "office": {
+    "name": "더미세무회계사무소",
+    "representative_number": "02-555-0100",
+    "minimum_staff": 3,
+    "maximum_staff": 20,
+    "owner_id": "owner",
+    "etc_employee_id": "employee-9",
+    "spam_reviewer_id": "employee-9",
+    "ring_timeout_seconds": 10,
+    "common_services": [
+      "부가세",
+      "종합소득세",
+      "법인세",
+      "원천세",
+      "급여 처리",
+      "4대보험",
+      "신고",
+      "기장"
+    ]
+  },
+  "employees": [
+    {"id": "owner", "name": "홍사장", "extension": "100", "role": "대표", "status": "available", "aliases": ["대표", "사장", "대표님", "사장님"], "backup_employee_id": "employee-1"},
+    {"id": "employee-1", "name": "홍길원", "extension": "101", "role": "담당자", "status": "available", "aliases": ["길원"], "backup_employee_id": "employee-2"},
+    {"id": "employee-2", "name": "홍길둘", "extension": "102", "role": "담당자", "status": "available", "aliases": ["길둘"], "backup_employee_id": "employee-3"},
+    {"id": "employee-3", "name": "홍길삼", "extension": "103", "role": "담당자", "status": "available", "aliases": ["길삼"], "backup_employee_id": "employee-4"},
+    {"id": "employee-4", "name": "홍길사", "extension": "104", "role": "담당자", "status": "available", "aliases": ["길사"], "backup_employee_id": "employee-5"},
+    {"id": "employee-5", "name": "홍길오", "extension": "105", "role": "담당자", "status": "available", "aliases": ["길오"], "backup_employee_id": "employee-6"},
+    {"id": "employee-6", "name": "홍길육", "extension": "106", "role": "담당자", "status": "available", "aliases": ["길육", "홀길육"], "backup_employee_id": "employee-7"},
+    {"id": "employee-7", "name": "홍길칠", "extension": "107", "role": "담당자", "status": "available", "aliases": ["길칠"], "backup_employee_id": "employee-8"},
+    {"id": "employee-8", "name": "홍길팔", "extension": "108", "role": "담당자", "status": "available", "aliases": ["길팔"], "backup_employee_id": "employee-9"},
+    {"id": "employee-9", "name": "홍길구", "extension": "109", "role": "기타 문의 및 스팸 검토 담당자", "status": "available", "aliases": ["길구", "막내"], "backup_employee_id": "employee-1"}
+  ],
+  "companies": [
+    {"id": "company-01", "name": "가온상사", "phone_numbers": ["02-555-1001", "010-9000-1001"], "employee_id": "employee-1"},
+    {"id": "company-02", "name": "나래물산", "phone_numbers": ["02-555-1002"], "employee_id": "employee-1"},
+    {"id": "company-03", "name": "다온테크", "phone_numbers": ["02-555-1003"], "employee_id": "employee-1"},
+    {"id": "company-04", "name": "라온유통", "phone_numbers": ["02-555-1004"], "employee_id": "employee-2"},
+    {"id": "company-05", "name": "마루건설", "phone_numbers": ["02-555-1005"], "employee_id": "employee-2"},
+    {"id": "company-06", "name": "바른식품", "phone_numbers": ["02-555-1006"], "employee_id": "employee-2"},
+    {"id": "company-07", "name": "새봄의원", "phone_numbers": ["02-555-1007"], "employee_id": "employee-3"},
+    {"id": "company-08", "name": "아람교육", "phone_numbers": ["02-555-1008"], "employee_id": "employee-3"},
+    {"id": "company-09", "name": "자람인테리어", "phone_numbers": ["02-555-1009"], "employee_id": "employee-3"},
+    {"id": "company-10", "name": "차오름약국", "phone_numbers": ["02-555-1010"], "employee_id": "employee-4"},
+    {"id": "company-11", "name": "카인물류", "phone_numbers": ["02-555-1011"], "employee_id": "employee-4"},
+    {"id": "company-12", "name": "타래디자인", "phone_numbers": ["02-555-1012"], "employee_id": "employee-4"},
+    {"id": "company-13", "name": "파란미디어", "phone_numbers": ["02-555-1013"], "employee_id": "employee-5"},
+    {"id": "company-14", "name": "하람전자", "phone_numbers": ["02-555-1014"], "employee_id": "employee-5"},
+    {"id": "company-15", "name": "한결서비스", "phone_numbers": ["02-555-1015"], "employee_id": "employee-5"},
+    {"id": "company-16", "name": "누리기획", "phone_numbers": ["02-555-1016"], "employee_id": "employee-6"},
+    {"id": "company-17", "name": "도담상회", "phone_numbers": ["02-555-1017"], "employee_id": "employee-6"},
+    {"id": "company-18", "name": "라움개발", "phone_numbers": ["02-555-1018"], "employee_id": "employee-6"},
+    {"id": "company-19", "name": "미르산업", "phone_numbers": ["02-555-1019"], "employee_id": "employee-7"},
+    {"id": "company-20", "name": "보람유통", "phone_numbers": ["02-555-1020"], "employee_id": "employee-7"},
+    {"id": "company-21", "name": "소담카페", "phone_numbers": ["02-555-1021"], "employee_id": "employee-7"},
+    {"id": "company-22", "name": "온새미건축", "phone_numbers": ["02-555-1022"], "employee_id": "employee-8"},
+    {"id": "company-23", "name": "푸른농산", "phone_numbers": ["02-555-1023"], "employee_id": "employee-8"},
+    {"id": "company-24", "name": "해든학원", "phone_numbers": ["02-555-1024"], "employee_id": "employee-8"},
+    {"id": "company-25", "name": "이든컴퍼니", "phone_numbers": ["02-555-1025"], "employee_id": "employee-9"},
+    {"id": "company-26", "name": "지음공방", "phone_numbers": ["02-555-1026"], "employee_id": "employee-9"},
+    {"id": "company-27", "name": "해솔파트너스", "phone_numbers": ["02-555-1027"], "employee_id": "employee-9"}
+  ],
+  "spam": {
+    "blocked_numbers": ["070-0000-0001"],
+    "suspicious_keywords": ["대출", "보험 권유", "광고", "리딩방", "투자 권유"]
+  }
+}
